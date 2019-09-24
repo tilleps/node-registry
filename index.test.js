@@ -25,6 +25,9 @@ registry.service("randomNumber", function() {
 });
 
 
+//
+//  Factories
+//
 let factoryOne = registry.factory("randomNumber");
 let factoryTwo = registry.factory("randomNumber");
 
@@ -32,6 +35,9 @@ let factoryTwo = registry.factory("randomNumber");
 tap.notEqual(factoryOne, factoryTwo, "factories should be different");
 
 
+//
+//  Instances
+//
 let instanceOne = registry.instance("randomNumber");
 let instanceTwo = registry.instance("randomNumber");
 let factoryThree = registry.factory("randomNumber");
@@ -42,3 +48,17 @@ tap.equal(instanceOne, instanceTwo, "instances should be the same value");
 //  Factory should be different
 tap.notEqual(instanceTwo, factoryThree, "factory value should be different");
 
+
+//
+//  Decorators
+//
+let postDecoratorValue;
+
+registry.decorator("randomNumber", function(service) {
+  postDecoratorValue = service;
+  return service;
+});
+
+let factoryValue = registry.factory("randomNumber");
+
+tap.equal(factoryValue, postDecoratorValue, "decorators should run after every factory");

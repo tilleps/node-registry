@@ -9,6 +9,7 @@ const _ = {
 
 function Registry() {
   this._injects = {};
+  this._decorators = {};
   
   //  Place to store data
   Object.defineProperty(this, "_registry", {
@@ -80,9 +81,30 @@ Registry.prototype.factory = function(path) {
   
   let service = fn.apply(null, injects);
   
+  //  Run decorator
+  if (path in this._decorators) {
+    service = this._decorators[path].reduce(function(ctx, item) {
+      return item(ctx);
+    }, service);
+  }
+
   return service;
 };
 
+
+Registry.prototype.decorator = function(path, value) {
+  if (typeof value !== "function") {
+    throw new Error("Decorator requires to be a function");
+  }
+
+  if (!(path in this._decorators)) {
+    this._decorators[path] = [];
+  }
+
+  this._decorators[path].push(value);
+
+  return this;
+};
 
 
 module.exports = Registry;
