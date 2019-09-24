@@ -38,15 +38,30 @@ tap.notEqual(factoryOne, factoryTwo, "factories should be different");
 //
 //  Instances
 //
-let instanceOne = registry.instance("randomNumber");
-let instanceTwo = registry.instance("randomNumber");
+let singletonOne = registry.singleton("randomNumber");
+let singletonTwo = registry.singleton("randomNumber");
 let factoryThree = registry.factory("randomNumber");
 
 //  Instances should be the same value
-tap.equal(instanceOne, instanceTwo, "instances should be the same value");
+tap.equal(singletonOne, singletonTwo, "singletons should be the same value");
 
 //  Factory should be different
-tap.notEqual(instanceTwo, factoryThree, "factory value should be different");
+tap.notEqual(singletonTwo, factoryThree, "factory value should be different");
+
+
+//
+//  Classes
+//
+function Animal(type) {
+  this.type = type;
+}
+
+registry.set("config.animal.type", "dog");
+registry.instance("dog", Animal, "config.animal.type")
+
+let animal = registry.singleton("dog");
+
+tap.equal(animal.type, "dog");
 
 
 //

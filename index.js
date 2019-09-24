@@ -18,7 +18,7 @@ function Registry() {
   });
 
   //  Place to store created instances 
-  Object.defineProperty(this, "_instances", {
+  Object.defineProperty(this, "_singletons", {
     enumerable: false,
     value: {}
   });
@@ -47,16 +47,33 @@ Registry.prototype.service = function(path, fn) {
 }
 
 
-Registry.prototype.instance = function(path) {
-  let instance = this._instances[path];
+Registry.prototype.instance = function(path, fn) {
+  let args = Array.prototype.slice.call(arguments, 2);
+
+  this.set(path, function() {
+    let args = Array.prototype.slice.call(arguments);
+
+    args.unshift(null);
+
+    return new (Function.prototype.bind.apply(fn, args));
+  });
   
-  if (typeof instance === "undefined") {
-    instance = this.factory(path);
+  this._injects[path] = args;
+  
+  return this;
+}
+
+
+Registry.prototype.singleton = function(path) {
+  let singleton = this._singletons[path];
+  
+  if (typeof singleton === "undefined") {
+    singleton = this.factory(path);
     
-    this._instances[path] = instance;
+    this._singletons[path] = singleton;
   }
   
-  return instance;
+  return singleton;
 };
 
 
@@ -72,7 +89,7 @@ Registry.prototype.factory = function(path) {
   injects = injects.map(function(subpath) {
     //  Instantiate services
     if (subpath in this._injects) {
-      return this.instance(subpath);
+      return this.singleton(subpath);
     }
     
     //  Inject non-service items
