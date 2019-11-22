@@ -20,7 +20,7 @@ tap.equal(registry.get("config.db.user"), "root", "set and get nested values");
 //
 //  Register Service
 //
-registry.service("randomNumber", function() {
+registry.register("randomNumber", function() {
   return Math.random();
 });
 
@@ -69,9 +69,9 @@ tap.equal(animal.type, "dog");
 //
 let postDecoratorValue;
 
-registry.decorator("randomNumber", function(service) {
-  postDecoratorValue = service;
-  return service;
+registry.decorator("randomNumber", function(dependency) {
+  postDecoratorValue = dependency;
+  return dependency;
 });
 
 let factoryValue = registry.factory("randomNumber");

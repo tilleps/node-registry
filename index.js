@@ -36,7 +36,7 @@ Registry.prototype.get = function(path, value) {
 };
 
 
-Registry.prototype.service = function(path, fn) {
+Registry.prototype.register = function(path, fn) {
   let args = Array.prototype.slice.call(arguments, 2);
   
   this.set(path, fn);
@@ -87,7 +87,7 @@ Registry.prototype.factory = function(path) {
   
   //  Inject dependencies
   injects = injects.map(function(subpath) {
-    //  Instantiate services
+    //  Instantiate dependencies
     if (subpath in this._injects) {
       return this.singleton(subpath);
     }
@@ -96,16 +96,16 @@ Registry.prototype.factory = function(path) {
     return this.get(subpath);
   }.bind(this));
   
-  let service = fn.apply(null, injects);
+  let dependency = fn.apply(null, injects);
   
   //  Run decorator
   if (path in this._decorators) {
-    service = this._decorators[path].reduce(function(ctx, item) {
+    dependency = this._decorators[path].reduce(function(ctx, item) {
       return item(ctx);
-    }, service);
+    }, dependency);
   }
 
-  return service;
+  return dependency;
 };
 
 
