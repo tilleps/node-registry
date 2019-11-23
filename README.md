@@ -7,5 +7,5 @@ Minimal container for registering services
 
 
 ```bash
-$ npm install express
+$ npm install
 ```

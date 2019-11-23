@@ -49,6 +49,18 @@ tap.equal(singletonOne, singletonTwo, "singletons should be the same value");
 tap.notEqual(singletonTwo, factoryThree, "factory value should be different");
 
 
+//  Non existing dependency
+registry.register("dependency.check", {}, "non.existing.dependency");
+
+try {
+  registry.singleton("dependency.check");
+  tap.fail("missing dependency should throw");
+}
+catch (err) {
+  tap.pass("missing dependency should throw");
+}
+
+
 //
 //  Classes
 //
@@ -57,11 +69,13 @@ function Animal(type) {
 }
 
 registry.set("config.animal.type", "dog");
-registry.instance("dog", Animal, "config.animal.type")
+registry.instance("dog", Animal, "config.animal.type");
+
 
 let animal = registry.singleton("dog");
 
 tap.equal(animal.type, "dog");
+
 
 
 //

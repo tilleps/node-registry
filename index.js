@@ -93,6 +93,9 @@ Registry.prototype.factory = function(path) {
     }
     
     //  Inject non-service items
+    if (!_.has(this._registry, subpath)) {
+      throw new Error("Missing dependency: " + subpath);
+    }
     return this.get(subpath);
   }.bind(this));
   
