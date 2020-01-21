@@ -84,8 +84,10 @@ Registry.prototype.factory = function(path) {
 
   let fn = _.get(this._registry, path);
   let injects = this._injects[path] || [];
-  
+
+  //
   //  Inject dependencies
+  //
   injects = injects.map(function(subpath) {
     //  Instantiate dependencies
     if (subpath in this._injects) {
@@ -99,9 +101,12 @@ Registry.prototype.factory = function(path) {
     return this.get(subpath);
   }.bind(this));
   
-  let dependency = fn.apply(null, injects);
+  //
+  //  Decorators
+  //
+  let dependency = typeof fn === "function" ? fn.apply(null, injects) : fn;
   
-  //  Run decorator
+  //  Run decorators
   if (path in this._decorators) {
     dependency = this._decorators[path].reduce(function(ctx, item) {
       return item(ctx);
@@ -125,6 +130,13 @@ Registry.prototype.decorator = function(path, value) {
 
   return this;
 };
+
+
+Registry.prototype.resolve = function(path, value) {
+  let singleton = this.get(value);
+
+  this.set(path, singleton);
+}
 
 
 module.exports = Registry;

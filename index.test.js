@@ -77,7 +77,6 @@ let animal = registry.singleton("dog");
 tap.equal(animal.type, "dog");
 
 
-
 //
 //  Decorators
 //
@@ -91,3 +90,18 @@ registry.decorator("randomNumber", function(dependency) {
 let factoryValue = registry.factory("randomNumber");
 
 tap.equal(factoryValue, postDecoratorValue, "decorators should run after every factory");
+
+
+//
+//  Resolvers
+//
+let first = "FIRST";
+
+registry.set("config.number", "one");
+registry.set("config.places.one", first);
+
+registry.resolve("places.first", "config.places.one");
+
+let resolvedOne = registry.factory("places.first");
+
+tap.equal(resolvedOne, first, "resolver should return singleton value");
